@@ -25,7 +25,7 @@ public class RestoBungar {
         int customerCount = 0;
         boolean expectInput = true;
         while (expectInput) {
-            System.out.println("Pesanan untuk berapa orang:");
+            System.out.print("Pesanan untuk berapa orang: ");
             try {
                 customerCount = Integer.parseInt(String.valueOf(input.nextLine()));
                 if (customerCount < 1) {
@@ -38,7 +38,7 @@ public class RestoBungar {
             }
         }
 
-        System.out.println("Pesanan atas nama:");
+        System.out.print("Pesanan atas nama: ");
         String customerName = input.nextLine();
 
         ///// Price List /////
@@ -64,7 +64,7 @@ public class RestoBungar {
         for (Map menu: menus) {
             expectInput = true;
             while (expectInput) {
-                System.out.printf("%d. %-25s=%n", idx, menu.get("name"));
+                System.out.printf("%d. %-25s= ", idx, menu.get("name"));
                 try {
                     int order = Integer.parseInt(String.valueOf(input.nextLine()));
                     if (order >= 0 && order <= 10) {
