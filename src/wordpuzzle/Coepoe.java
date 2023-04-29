@@ -19,8 +19,8 @@ public class Coepoe {
         System.out.println("5. User tidak dapat menginput kata yang sama.");
 
         // Get words from dictionary
-        // Source: https://github.com/dwyl/english-words/blob/master/words_alpha.txt
-        Path filePath = new File("src/wordpuzzle/words_alpha.txt").toPath();
+        // Source: https://raw.githubusercontent.com/dzur658/all_english_words_csv/master/words.csv
+        Path filePath = new File("src/wordpuzzle/words.txt").toPath();
         List<String> dictionary = Files.readAllLines(filePath);
         List<String> eligibleWords = new ArrayList<>();
         for (String word: dictionary) {
@@ -40,37 +40,42 @@ public class Coepoe {
             System.out.println("=======");
             System.out.println();
 
-            // Generate random letters
-            String[] letters = generateLetters();
+            List<String> correctAnswers = new ArrayList<>();
+            String[] letters = new String[0];
+            // Use the letter combination only if correct answers at least 15 words
+            while (correctAnswers.size() <= 15) {
+                // Generate random letters
+                letters = generateLetters();
+
+                // Count occurrence of each letter
+                Map<String, Integer> numberOfLetters = new HashMap<>();
+                for (String letter : letters) {
+                    if (numberOfLetters.containsKey(letter)) {
+                        numberOfLetters.put(letter, numberOfLetters.get(letter) + 1);
+                    } else {
+                        numberOfLetters.put(letter, 1);
+                    }
+                }
+
+                // Populate correct answers
+                correctAnswers = new ArrayList<>();
+                for (String word : eligibleWords) {
+                    String pattern = String.join("", letters);
+                    if (word.matches(String.format("[%s]+", pattern))) {
+                        boolean wordIsValid = checkWordValidity(numberOfLetters, word);
+                        if (wordIsValid) {
+                            correctAnswers.add(word);
+                        }
+                    }
+                }
+            }
+            // Print the letters
             String txtLetters = String.join("  ", letters);
             System.out.println("\t" + txtLetters + "\n");
 
-            // Count occurrence of each letter
-            Map<String, Integer> numberOfLetters = new HashMap<String, Integer>();
-            for (String letter : letters) {
-                if (numberOfLetters.containsKey(letter)) {
-                    numberOfLetters.put(letter, numberOfLetters.get(letter) + 1);
-                } else {
-                    numberOfLetters.put(letter, 1);
-                }
-            }
-
-            // Get correct answers
-            List<String> correctAnswers = new ArrayList<>();
-            for (String word : eligibleWords) {
-                String pattern = String.join("", letters);
-                if (word.matches(String.format("[%s]+", pattern))) {
-                    boolean wordIsValid = checkWordValidity(numberOfLetters, word);
-                    if (wordIsValid) {
-                        correctAnswers.add(word);
-                    }
-                }
-                ;
-            }
-
             // Answer
             List<String> answers = new ArrayList<>();
-            String answer = "";
+            String answer;
             int trial = 1;
             int rights = 0;
             while (trial <= 10) {
@@ -123,7 +128,7 @@ public class Coepoe {
                     }
                 }
             } else {
-                finalScore += rights*10;
+                finalScore += rights * 10;
             }
         }
 
@@ -167,7 +172,7 @@ public class Coepoe {
         boolean validity = true;
 
         // Check for each character in word
-        Map<String, Integer> letterCounts = new HashMap<String, Integer>(numberOfLetters);
+        Map<String, Integer> letterCounts = new HashMap<>(numberOfLetters);
         for (char wordLetter: word.toCharArray()) {
 
             String key = "" + wordLetter;
